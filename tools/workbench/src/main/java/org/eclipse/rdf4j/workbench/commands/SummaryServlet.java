@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 
 public class SummaryServlet extends TransformationServlet {
 
-	private final ExecutorService executorService = Executors.newCachedThreadPool();
+	private final ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SummaryServlet.class);
 
