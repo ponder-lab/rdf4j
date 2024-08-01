@@ -252,7 +252,7 @@ public class ShaclSail extends ShaclSailBaseConfiguration {
 	@Experimental
 	protected RevivableExecutorService getExecutorService() {
 		return new RevivableExecutorService(
-				() -> Executors.newThreadPerTaskExecutor(Thread.ofVirtual().name("ShaclSail validation thread ", t.getId()).factory()))
+				() -> Executors.newThreadPerTaskExecutor(Thread.ofVirtual().name("ShaclSail validation thread ", t.getId()).factory()));
 	}
 
 	void closeConnection() {
