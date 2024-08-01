@@ -164,18 +164,7 @@ public class SharedHttpClientSessionManager implements HttpClientSessionManager,
 	 *--------------*/
 
 	public SharedHttpClientSessionManager() {
-		final ThreadFactory backingThreadFactory = Executors.defaultThreadFactory();
-
-		ExecutorService threadPoolExecutor = Executors.newCachedThreadPool((Runnable runnable) -> {
-			Thread thread = backingThreadFactory.newThread(runnable);
-			thread.setName(
-					String.format("rdf4j-SharedHttpClientSessionManager-%d", threadCount.getAndIncrement()));
-			thread.setDaemon(true);
-			return thread;
-		});
-
-		Integer corePoolSize = Integer.getInteger(CORE_POOL_SIZE_PROPERTY, 1);
-		((ThreadPoolExecutor) threadPoolExecutor).setCorePoolSize(corePoolSize);
+		ExecutorService threadPoolExecutor = Executors.newThreadPerTaskExecutor(Thread.ofVirtual().name("rdf4j-SharedHttpClientSessionManager-", threadCount.getAndIncrement()).factory());
 		this.executor = threadPoolExecutor;
 	}
 
