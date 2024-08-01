@@ -252,16 +252,7 @@ public class ShaclSail extends ShaclSailBaseConfiguration {
 	@Experimental
 	protected RevivableExecutorService getExecutorService() {
 		return new RevivableExecutorService(
-				() -> Executors.newFixedThreadPool(AVAILABLE_PROCESSORS,
-						r -> {
-							Thread t = Executors.defaultThreadFactory().newThread(r);
-							// this thread pool does not need to stick around if the all other threads are done, because
-							// it is only used for SHACL validation and if all other threads have ended then there would
-							// be no thread to receive the validation results.
-							t.setDaemon(true);
-							t.setName("ShaclSail validation thread " + t.getId());
-							return t;
-						}));
+				() -> Executors.newThreadPerTaskExecutor(Thread.ofVirtual().name("ShaclSail validation thread ", t.getId()).factory()))
 	}
 
 	void closeConnection() {
