@@ -252,7 +252,7 @@ public class ShaclSail extends ShaclSailBaseConfiguration {
 	@Experimental
 	protected RevivableExecutorService getExecutorService() {
 		return new RevivableExecutorService(
-				() -> Executors.newThreadPerTaskExecutor(AVAILABLE_PROCESSORS,
+				() -> Executors.newThreadPerTaskExecutor(
 						r -> {
 							Thread t = Thread.ofVirtual().factory().newThread(r);
 							// this thread pool does not need to stick around if the all other threads are done, because
