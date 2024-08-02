@@ -442,8 +442,7 @@ public class ProtocolIT {
 		// "Test-NativeStore");
 		String repositoryLocation = TestServer.REPOSITORY_URL;
 
-		ExecutorService threadPool = Executors.newFixedThreadPool(20,
-				new ThreadFactoryBuilder().setNameFormat("rdf4j-protocoltest-%d").build());
+		ExecutorService threadPool = Executors.newThreadPerTaskExecutor(new NamingThreadFactory("rdf4j-protocoltest-"));
 
 		for (int count = 0; count < limitCount; count++) {
 			final int number = count;
