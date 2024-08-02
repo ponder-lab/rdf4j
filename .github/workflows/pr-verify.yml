@@ -148,6 +148,9 @@ jobs:
       - name: Run end-to-end tests of RDF4J Server and Workbench
         working-directory: ./e2e
         run: ./run.sh
+      - name: Print Docker logs on failure
+        if: failure()
+        run: docker compose logs
       - name: Cancel workflow on failure
         uses: vishnudxb/cancel-workflow@v1.2
         if: failure()
