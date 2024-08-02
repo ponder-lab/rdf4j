@@ -11,7 +11,7 @@ WORKDIR /tmp
 RUN unzip -q /tmp/rdf4j.zip
 
 # Final workbench
-FROM tomcat:8.5-jre11-temurin
+FROM tomcat:10-jdk21-temurin
 MAINTAINER Bart Hanssens (bart.hanssens@bosa.fgov.be)
 
 RUN apt-get clean && apt-get update && apt-get upgrade -y && apt-get clean
