@@ -164,7 +164,9 @@ public class SharedHttpClientSessionManager implements HttpClientSessionManager,
 	 *--------------*/
 
 	public SharedHttpClientSessionManager() {
-		ExecutorService threadPoolExecutor = Executors.newThreadPerTaskExecutor(Thread.ofVirtual().name("rdf4j-SharedHttpClientSessionManager-", threadCount.getAndIncrement()).factory());
+		ExecutorService threadPoolExecutor = Executors.newThreadPerTaskExecutor(Thread.ofVirtual()
+				.name("rdf4j-SharedHttpClientSessionManager-", threadCount.getAndIncrement())
+				.factory());
 		this.executor = threadPoolExecutor;
 	}
 
