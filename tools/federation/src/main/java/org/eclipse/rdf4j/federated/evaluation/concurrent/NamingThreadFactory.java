@@ -29,8 +29,7 @@ public class NamingThreadFactory implements ThreadFactory {
 
 	@Override
 	public Thread newThread(Runnable r) {
-		Thread t = Executors.defaultThreadFactory().newThread(r);
-		t.setName(baseName + "-" + nextThreadId.incrementAndGet());
+		Thread t = Thread.ofVirtual().name(baseName + "-", nextThreadId.incrementAndGet()).unstarted(r);
 		return t;
 	}
 
