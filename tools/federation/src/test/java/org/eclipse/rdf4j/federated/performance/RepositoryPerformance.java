@@ -55,7 +55,7 @@ public class RepositoryPerformance {
 
 		private static final int MAX_INSTANCES = Integer.MAX_VALUE;
 		private static final int N_QUERIES = 100;
-		private final ExecutorService executor = Executors.newFixedThreadPool(30);
+		private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
 
 		private final IRI type;
 
