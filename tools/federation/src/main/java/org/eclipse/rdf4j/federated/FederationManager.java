@@ -92,7 +92,7 @@ public class FederationManager {
 	public void init(FedX federation, FederationContext federationContext) {
 		this.federation = federation;
 		this.federationContext = federationContext;
-		this.executor = Executors.newCachedThreadPool(new NamingThreadFactory("FedX Executor"));
+		this.executor = Executors.newThreadPerTaskExecutor(new NamingThreadFactory("FedX Executor"));
 
 		updateFederationType();
 		reset();
