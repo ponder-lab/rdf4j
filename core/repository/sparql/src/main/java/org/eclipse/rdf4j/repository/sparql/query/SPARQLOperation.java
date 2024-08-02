@@ -35,7 +35,7 @@ import org.eclipse.rdf4j.query.impl.SimpleDataset;
 @Deprecated
 public abstract class SPARQLOperation implements Operation {
 
-	private static final Executor executor = Executors.newCachedThreadPool();
+	private static final Executor executor = Executors.newVirtualThreadPerTaskExecutor();
 
 	protected HttpClient client;
 
