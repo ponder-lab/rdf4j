@@ -1,6 +1,6 @@
 ## About this Content
 
-October 7, 2015
+October 7, 2015 
 
 ### License
 
