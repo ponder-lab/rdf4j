@@ -118,7 +118,7 @@ public class ControlledWorkerScheduler<T> implements Scheduler<T>, TaskWrapperAw
 
 	private ExecutorService createExecutorService() {
 
-		ExecutorService executor = Executors.newThreadPerTaskExecutor(new NamingThreadFactory(name))
+		ExecutorService executor = Executors.newThreadPerTaskExecutor(new NamingThreadFactory(name));
 		return executor;
 	}
 
