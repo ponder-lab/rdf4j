@@ -42,7 +42,7 @@ public class BaseConcurrentBenchmark {
 		if (executorService != null) {
 			executorService.shutdownNow();
 		}
-		executorService = Executors.newFixedThreadPool(8);
+		executorService = Executors.newVirtualThreadPerTaskExecutor();
 	}
 
 	@TearDown(Level.Trial)
