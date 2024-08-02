@@ -109,7 +109,7 @@ public class OverflowBenchmarkConcurrent {
 		SailRepository sailRepository = new SailRepository(new NotifySailWrapper(new NotifySailWrapper(
 				new NotifySailWrapper(
 						new NotifySailWrapper(new NotifySailWrapper(new LmdbStore(temporaryFolder)))))));
-		ExecutorService executorService = Executors.newFixedThreadPool(10);
+		ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
 
 		try {
 
