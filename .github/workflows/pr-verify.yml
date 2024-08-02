@@ -79,7 +79,7 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v1
       with:
-        java-version: 12
+        java-version: 21
     - name: Cache local Maven repository
       uses: actions/cache@v2
       with:
