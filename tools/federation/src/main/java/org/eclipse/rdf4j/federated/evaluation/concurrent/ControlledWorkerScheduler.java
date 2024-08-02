@@ -12,9 +12,9 @@ package org.eclipse.rdf4j.federated.evaluation.concurrent;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.rdf4j.common.iteration.CloseableIteration;
@@ -118,9 +118,7 @@ public class ControlledWorkerScheduler<T> implements Scheduler<T>, TaskWrapperAw
 
 	private ExecutorService createExecutorService() {
 
-		ThreadPoolExecutor executor = new ThreadPoolExecutor(nWorkers, nWorkers, 60L, TimeUnit.SECONDS, _taskQueue,
-				new NamingThreadFactory(name));
-		executor.allowCoreThreadTimeOut(true);
+		ExecutorService executor = Executors.newThreadPerTaskExecutor(new NamingThreadFactory(name))
 		return executor;
 	}
 
