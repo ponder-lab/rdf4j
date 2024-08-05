@@ -45,6 +45,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.eclipse.rdf4j.common.io.IOUtil;
+import org.eclipse.rdf4j.federated.evaluation.concurrent.NamingThreadFactory;
 import org.eclipse.rdf4j.http.protocol.Protocol;
 import org.eclipse.rdf4j.model.Namespace;
 import org.eclipse.rdf4j.model.ValueFactory;
@@ -61,7 +62,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.Sets;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.opencsv.CSVReader;
 
 public class ProtocolIT {
@@ -442,8 +442,7 @@ public class ProtocolIT {
 		// "Test-NativeStore");
 		String repositoryLocation = TestServer.REPOSITORY_URL;
 
-		ExecutorService threadPool = Executors.newFixedThreadPool(20,
-				new ThreadFactoryBuilder().setNameFormat("rdf4j-protocoltest-%d").build());
+		ExecutorService threadPool = Executors.newThreadPerTaskExecutor(new NamingThreadFactory("rdf4j-protocoltest-"));
 
 		for (int count = 0; count < limitCount; count++) {
 			final int number = count;

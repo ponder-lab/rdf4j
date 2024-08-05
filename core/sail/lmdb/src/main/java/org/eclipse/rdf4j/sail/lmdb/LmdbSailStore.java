@@ -64,7 +64,7 @@ class LmdbSailStore implements SailStore {
 
 	private final ValueStore valueStore;
 
-	private final ExecutorService tripleStoreExecutor = Executors.newCachedThreadPool();
+	private final ExecutorService tripleStoreExecutor = Executors.newVirtualThreadPerTaskExecutor();
 	private final CircularBuffer<Operation> opQueue = new CircularBuffer<>(1024);
 	private volatile Throwable tripleStoreException;
 	private final AtomicBoolean running = new AtomicBoolean(false);

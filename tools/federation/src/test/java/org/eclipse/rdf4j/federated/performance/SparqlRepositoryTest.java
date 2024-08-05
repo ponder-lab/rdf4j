@@ -29,7 +29,7 @@ public class SparqlRepositoryTest {
 
 	public static void main(String[] args) throws Exception {
 
-		ExecutorService executor = Executors.newFixedThreadPool(20);
+		ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
 
 		SPARQLRepository repo = new SPARQLRepository("http://dbpedia.org/sparql");
 		repo.init();

@@ -40,7 +40,7 @@ public class RemoteRepositoryTest {
 	 */
 	public static void main(String[] args) throws Exception {
 
-		ExecutorService executor = Executors.newFixedThreadPool(30);
+		ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
 
 		Repository repo = new HTTPRepository("http://10.212.10.29:8081/openrdf-sesame", "drugbank");
 
