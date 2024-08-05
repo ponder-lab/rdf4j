@@ -278,7 +278,8 @@ public class ServiceTests extends SPARQLBaseTest {
 		repo.init();
 		System.out.println("test10_serviceBoundJoin: repo.init() done");
 		fedxRule.getFederationContext().getConfig().withBoundJoinBlockSize(5);
-		System.out.println("test10_serviceBoundJoin: fedxRule.getFederationContext().getConfig().withBoundJoinBlockSize(5) done");
+		System.out.println(
+				"test10_serviceBoundJoin: fedxRule.getFederationContext().getConfig().withBoundJoinBlockSize(5) done");
 		/*
 		 * test select query retrieving all persons from endpoint 1 (SERVICE), endpoint not part of federation =>
 		 * evaluate using externally provided service resolver endpoint1 is reachable as
