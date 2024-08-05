@@ -92,7 +92,8 @@ public class FederationManager {
 	public void init(FedX federation, FederationContext federationContext) {
 		this.federation = federation;
 		this.federationContext = federationContext;
-		this.executor = Executors.newThreadPerTaskExecutor(new NamingThreadFactory("FedX Executor"));
+		// Refactoring this causes ServicesTest to hang forever (https://github.com/ponder-lab/rdf4j/actions/runs/10239404923/job/28324948852?pr=2)
+		this.executor = Executors.newCachedThreadPool(new NamingThreadFactory("FedX Executor"));
 
 		updateFederationType();
 		reset();
