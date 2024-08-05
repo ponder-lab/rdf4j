@@ -47,15 +47,17 @@ public class ServiceTests extends SPARQLBaseTest {
 
 	@Test
 	public void test1() throws Exception {
-
+		System.out.println("test1: starting");
 		assumeSparqlEndpoint();
-
+		System.out.println("test1: assumeSparqlEndpoint(...) done");
 		/* test select query retrieving all persons from endpoint 1 (SERVICE) */
 		prepareTest(Arrays.asList("/tests/data/data1.ttl", "/tests/data/data2.ttl", "/tests/data/data3.ttl",
 				"/tests/data/data4.ttl"));
-
+		System.out.println("test1: prepareTest(...) done");
 		evaluateQueryPlan("/tests/service/query01.rq", "/tests/service/query01.qp");
+		System.out.println("test1: evaluateQueryPlan(...) done");
 		execute("/tests/service/query01.rq", "/tests/service/query01.srx", false, true);
+		System.out.println("test1: execute(...) done");
 	}
 
 	@Test
