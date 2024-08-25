@@ -773,7 +773,7 @@ public abstract class AbstractGenericLuceneTest {
 		final CountDownLatch endLatch = new CountDownLatch(numThreads);
 		final Set<Throwable> exceptions = ConcurrentHashMap.newKeySet();
 		for (int i = 0; i < numThreads; i++) {
-			new Thread(new Runnable() {
+			Thread.ofVirtual().start(new Runnable() {
 
 				private final long iterationCount = 10 + Math.round(random.nextDouble() * 100);
 
@@ -791,7 +791,7 @@ public abstract class AbstractGenericLuceneTest {
 						endLatch.countDown();
 					}
 				}
-			}).start();
+			});
 		}
 		startLatch.countDown();
 		endLatch.await();

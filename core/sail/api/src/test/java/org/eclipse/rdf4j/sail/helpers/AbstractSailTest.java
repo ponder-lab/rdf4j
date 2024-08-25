@@ -101,7 +101,7 @@ public class AbstractSailTest {
 		CountDownLatch latch = new CountDownLatch(count);
 
 		for (int i = 0; i < count; i++) {
-			new Thread(new SailGetConnectionTask(subject, latch)).start();
+			Thread.ofVirtual().start(new SailGetConnectionTask(subject, latch));
 		}
 
 		if (!latch.await(30, TimeUnit.SECONDS)) {
