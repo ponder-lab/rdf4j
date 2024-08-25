@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.rdf4j.sail.shacl;
 
+import static org.openjdk.jmh.annotations.Level.Trial;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -47,26 +49,55 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Isolated;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.TearDown;
+import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 
 @Isolated
+@State(Scope.Benchmark)
+@Warmup(iterations = 5)
+@BenchmarkMode({ Mode.AverageTime })
+@Fork(value = 1, jvmArgs = { "-Xms1G", "-Xmx1G", "-XX:+UseG1GC" })
+@Measurement(iterations = 5)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
 public abstract class MultithreadedTest {
+
+	@Param({ "1", "5", "10", "50", "100" })
+	private int numThreadsPerTransaction;
+
 	SimpleValueFactory vf = SimpleValueFactory.getInstance();
 
 	@BeforeAll
+	@Setup(org.openjdk.jmh.annotations.Level.Trial)
 	public static void beforeAll() {
 		ParentReferenceChecker.skip = true;
 	}
 
 	@AfterAll
+	@TearDown(org.openjdk.jmh.annotations.Level.Trial)
 	public static void afterAll() {
 		ParentReferenceChecker.skip = false;
 	}
 
 	@Test
+	@Benchmark
 	public void testDataAndShapes() {
 		System.out.println("testDataAndShapes");
 
@@ -211,7 +242,7 @@ public abstract class MultithreadedTest {
 
 	}
 
-	private void parallelTest(List<List<Transaction>> list, IsolationLevels isolationLevel) {
+	public void parallelTest(List<List<Transaction>> list, IsolationLevels isolationLevel) {
 		ShaclSail sail = new ShaclSail(getBaseSail());
 		sail.setParallelValidation(true);
 		sail.setLogValidationPlans(false);
@@ -226,7 +257,7 @@ public abstract class MultithreadedTest {
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
 
 		try {
-			for (int i = 0; i < 3; i++) {
+			for (int i = 0; i < numThreadsPerTransaction; i++) {
 				list.stream()
 						.flatMap(Collection::stream)
 						.sorted(Comparator.comparingInt(System::identityHashCode))
@@ -357,7 +388,7 @@ public abstract class MultithreadedTest {
 	public void testLotsOfValidationFailuresSerializableValidation() throws IOException {
 		System.out.println("testLotsOfValidationFailuresSerializableValidation");
 		Logger root = (Logger) LoggerFactory.getLogger(ShaclSailBaseConfiguration.class.getName());
-		root.setLevel(Level.ERROR);
+		root.setLevel(ch.qos.logback.classic.Level.ERROR);
 
 		ShaclSail sail = new ShaclSail(getBaseSail());
 
@@ -374,7 +405,8 @@ public abstract class MultithreadedTest {
 	public void testLotsOfValidationFailuresSerializable() throws IOException {
 		System.out.println("testLotsOfValidationFailuresSerializable");
 
-		((Logger) LoggerFactory.getLogger(ShaclSailConnection.class.getName())).setLevel(Level.ERROR);
+		((Logger) LoggerFactory.getLogger(ShaclSailConnection.class.getName()))
+				.setLevel(ch.qos.logback.classic.Level.ERROR);
 
 		ShaclSail sail = new ShaclSail(getBaseSail());
 
