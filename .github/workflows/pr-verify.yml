@@ -92,7 +92,7 @@ jobs:
     - name: Build
       run: mvn -B -U -T 2 clean install -Pquick,-formatting -Dmaven.javadoc.skip=true -Djapicmp.skip -Denforcer.skip=true -Danimal.sniffer.skip=true
     - name: Verify
-      run: mvn -B verify -PslowTestsOnly,-skipSlowTests,-formatting -Dmaven.javadoc.skip=true -Djapicmp.skip -Denforcer.skip=true -Danimal.sniffer.skip=true
+      run: mvn -B verify -PslowTestsOnly,-skipSlowTests,-formatting -Dmaven.javadoc.skip=true -Djapicmp.skip -Denforcer.skip=true -Danimal.sniffer.skip=true -Djmh.skip=true
     - name: Publish Test Report
       if: failure()
       uses: scacap/action-surefire-report@v1
