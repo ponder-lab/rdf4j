@@ -79,11 +79,14 @@ public class MemStatementListTestIT {
 	private static List<MemStatement> statements;
 
 	@Param({ "10", "50", "100", "500", "1000", "5000" })
-	public static int CHUNKS;
+	public static int CHUNKS = 1_000;
 
 	@BeforeAll
 	@Setup(Level.Trial)
 	public static void beforeAll() throws IOException {
+		boolean isJmhRunning = System.getProperty("jmh.ignoreLock") != null;
+		if (!isJmhRunning)
+			CHUNKS = 1_000;
 		MemoryStore memoryStore = new MemoryStore();
 		try {
 			try (NotifyingSailConnection connection = memoryStore.getConnection()) {
