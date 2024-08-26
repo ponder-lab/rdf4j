@@ -252,9 +252,10 @@ public class ShaclSail extends ShaclSailBaseConfiguration {
 	@Experimental
 	protected RevivableExecutorService getExecutorService() {
 		return new RevivableExecutorService(
-				() -> Executors.newThreadPerTaskExecutor(
+				// Does refactoring this cause tests to hang?
+				() -> Executors.newFixedThreadPool(AVAILABLE_PROCESSORS,
 						r -> {
-							Thread t = Thread.ofVirtual().factory().newThread(r);
+							Thread t = Executors.defaultThreadFactory().newThread(r);
 							// this thread pool does not need to stick around if the all other threads are done, because
 							// it is only used for SHACL validation and if all other threads have ended then there would
 							// be no thread to receive the validation results.
