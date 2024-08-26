@@ -223,6 +223,8 @@ public abstract class MultithreadedTest {
 
 		Random r = new Random(52465534);
 
+		// Refactoring this causes tests to hang forever
+		// (https://github.com/ponder-lab/rdf4j/actions/runs/10567565368/job/29276778845)
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
 
 		try {
@@ -467,7 +469,9 @@ public abstract class MultithreadedTest {
 			deadlockDetectionThread.setDaemon(true);
 			deadlockDetectionThread.start();
 
-			executorService = Executors.newVirtualThreadPerTaskExecutor();
+			// Refactoring this causes tests to hang forever
+			(https://github.com/ponder-lab/rdf4j/actions/runs/10568156440/job/29278593171)
+			executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
 
 			Utils.loadShapeData(repository, "complexBenchmark/shacl.trig");
 
