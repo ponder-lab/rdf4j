@@ -223,8 +223,7 @@ public abstract class MultithreadedTest {
 
 		Random r = new Random(52465534);
 
-		// Does refactoring this cause problems??
-		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+		ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
 
 		try {
 			for (int i = 0; i < 3; i++) {
@@ -468,9 +467,7 @@ public abstract class MultithreadedTest {
 			deadlockDetectionThread.setDaemon(true);
 			deadlockDetectionThread.start();
 
-			// Refactoring this causes testLotsOfValidationFailuresSerializable() to hang forever
-			// (https://github.com/ponder-lab/rdf4j/actions/runs/10550384841/job/29226485226#step:7:5128)
-			executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+			executorService = Executors.newVirtualThreadPerTaskExecutor();
 
 			Utils.loadShapeData(repository, "complexBenchmark/shacl.trig");
 
