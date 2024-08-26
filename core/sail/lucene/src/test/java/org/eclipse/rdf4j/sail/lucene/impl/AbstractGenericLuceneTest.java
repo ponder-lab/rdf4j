@@ -70,8 +70,36 @@ import org.junit.jupiter.api.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.TearDown;
+import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
+
 @Timeout(value = 10, unit = TimeUnit.MINUTES)
+@State(Scope.Benchmark)
+@Warmup(iterations = 5)
+@BenchmarkMode({ Mode.AverageTime })
+@Fork(value = 1, jvmArgs = { "-Xms1G", "-Xmx1G", "-XX:+UseG1GC" })
+@Measurement(iterations = 5)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
 public abstract class AbstractGenericLuceneTest {
+
+	@Param({ "10", "50", "100", "500", "1000", "5000" })
+	int numThreads;
+
 	protected static final ValueFactory vf = SimpleValueFactory.getInstance();
 
 	public static final String QUERY_STRING;
@@ -120,6 +148,7 @@ public abstract class AbstractGenericLuceneTest {
 	protected abstract void configure(LuceneSail sail) throws IOException;
 
 	@BeforeEach
+	@Setup(Level.Iteration)
 	public void setUp() throws Exception {
 		// set logging, uncomment this to get better logging for debugging
 		// org.apache.log4j.BasicConfigurator.configure();
@@ -151,6 +180,7 @@ public abstract class AbstractGenericLuceneTest {
 	}
 
 	@AfterEach
+	@TearDown(Level.Iteration)
 	public void tearDown() throws RepositoryException {
 		try {
 			if (connection != null) {
@@ -767,8 +797,8 @@ public abstract class AbstractGenericLuceneTest {
 	}
 
 	@Test
+	@Benchmark
 	public void testMultithreadedAdd() throws InterruptedException {
-		int numThreads = 3;
 		final CountDownLatch startLatch = new CountDownLatch(1);
 		final CountDownLatch endLatch = new CountDownLatch(numThreads);
 		final Set<Throwable> exceptions = ConcurrentHashMap.newKeySet();
