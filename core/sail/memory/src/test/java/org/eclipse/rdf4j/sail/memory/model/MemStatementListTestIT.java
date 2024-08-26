@@ -77,7 +77,7 @@ import com.google.common.collect.Lists;
 public class MemStatementListTestIT {
 
 	private static List<MemStatement> statements;
-	
+
 	@Param({ "10", "50", "100", "500", "1000", "5000" })
 	public static int CHUNKS = 1_000;
 
