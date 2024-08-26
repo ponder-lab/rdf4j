@@ -295,7 +295,7 @@ public class RepositoryFederatedServiceIntegrationTest {
 						.map(value -> vf.createStatement(iri("s1"), RDFS.LABEL, value))
 						.collect(Collectors.toList()));
 
-		ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
+		ExecutorService executor = Executors.newFixedThreadPool(5);
 		try {
 			for (int i = 0; i < 5; i++) {
 				executor.submit(() -> {

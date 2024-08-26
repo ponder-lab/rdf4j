@@ -106,7 +106,7 @@ public class MemStatementListTestIT {
 
 		MemStatementList memStatementList = new MemStatementList();
 
-		ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
+		ExecutorService executorService = Executors.newCachedThreadPool();
 		try {
 
 			List<? extends Future<?>> collect = partition
@@ -153,7 +153,7 @@ public class MemStatementListTestIT {
 
 		CountDownLatch countDownLatch = new CountDownLatch(1);
 
-		ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
+		ExecutorService executorService = Executors.newCachedThreadPool();
 		try {
 
 			Future<?> cleanupFuture = executorService.submit(() -> {

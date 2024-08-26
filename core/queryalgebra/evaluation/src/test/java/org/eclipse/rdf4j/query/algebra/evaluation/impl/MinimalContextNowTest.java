@@ -49,7 +49,7 @@ public class MinimalContextNowTest {
 		int numberOfIterations = 100;
 		int numberOfThreads = 10;
 
-		ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
+		ExecutorService executorService = Executors.newCachedThreadPool();
 		try {
 
 			for (int i = 0; i < numberOfIterations; i++) {
