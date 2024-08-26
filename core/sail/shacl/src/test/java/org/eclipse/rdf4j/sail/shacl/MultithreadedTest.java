@@ -223,7 +223,7 @@ public abstract class MultithreadedTest {
 
 		Random r = new Random(52465534);
 
-		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+		ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
 
 		try {
 			for (int i = 0; i < 3; i++) {
