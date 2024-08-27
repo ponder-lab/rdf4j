@@ -137,7 +137,7 @@ public class ParallelQueryBenchmark extends BaseConcurrentBenchmark {
 			RepositoryConnection connection, IsolationLevel isolationLevel) {
 		ArrayList<Runnable> list = new ArrayList<>();
 
-		for (int i = 0; i < 2*workloadSize; i++) {
+		for (int i = 0; i < 2 * workloadSize; i++) {
 			list.add(getRunnable(startSignal, connection, isolationLevel, (localConnection) -> {
 				long count = localConnection
 						.prepareTupleQuery(query4)
@@ -149,7 +149,7 @@ public class ParallelQueryBenchmark extends BaseConcurrentBenchmark {
 			}));
 		}
 
-		for (int i = 0; i < 2*workloadSize; i++) {
+		for (int i = 0; i < 2 * workloadSize; i++) {
 			list.add(getRunnable(startSignal, connection, isolationLevel, (localConnection) -> {
 				long count = localConnection
 						.prepareTupleQuery(query7_pathexpression1)
@@ -161,7 +161,7 @@ public class ParallelQueryBenchmark extends BaseConcurrentBenchmark {
 			}));
 		}
 
-		for (int i = 0; i < 2*workloadSize; i++) {
+		for (int i = 0; i < 2 * workloadSize; i++) {
 			list.add(getRunnable(startSignal, connection, isolationLevel, (localConnection) -> {
 				long count = localConnection
 						.prepareTupleQuery(query8_pathexpression2)
@@ -173,13 +173,13 @@ public class ParallelQueryBenchmark extends BaseConcurrentBenchmark {
 			}));
 		}
 
-		for (int i = 0; i < 20*workloadSize; i++) {
+		for (int i = 0; i < 20 * workloadSize; i++) {
 			list.add(getRunnable(startSignal, connection, isolationLevel, (localConnection) -> {
 				blackhole.consume(localConnection.hasStatement(null, RDF.TYPE, null, false));
 			}));
 		}
 
-		for (int i = 0; i < 20*workloadSize; i++) {
+		for (int i = 0; i < 20 * workloadSize; i++) {
 			list.add(getRunnable(startSignal, connection, isolationLevel, (localConnection) -> {
 				blackhole.consume(localConnection.hasStatement(null, RDF.TYPE, null, true));
 			}));
