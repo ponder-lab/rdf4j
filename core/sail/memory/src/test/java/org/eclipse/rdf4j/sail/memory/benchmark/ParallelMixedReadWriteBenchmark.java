@@ -45,6 +45,7 @@ import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
@@ -72,6 +73,9 @@ import ch.qos.logback.classic.Logger;
 @Measurement(iterations = 5)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class ParallelMixedReadWriteBenchmark extends BaseConcurrentBenchmark {
+
+	@Param({ "1", "5", "10", "50", "100", "500" })
+	public int workloadSize;
 
 	private static final String query1;
 	private static final String query4;
@@ -181,7 +185,7 @@ public class ParallelMixedReadWriteBenchmark extends BaseConcurrentBenchmark {
 			RepositoryConnection connection, IsolationLevel isolationLevel) {
 		ArrayList<Runnable> list = new ArrayList<>();
 
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < workloadSize; i++) {
 			list.add(getRunnable(startSignal, connection, isolationLevel, (localConnection) -> {
 				long count = localConnection
 						.prepareTupleQuery(query4)
@@ -195,7 +199,7 @@ public class ParallelMixedReadWriteBenchmark extends BaseConcurrentBenchmark {
 			}));
 		}
 
-		for (int i = 0; i < 30; i++) {
+		for (int i = 0; i < 3*workloadSize; i++) {
 			list.add(getRunnable(startSignal, connection, isolationLevel, (localConnection) -> {
 				long count = localConnection
 						.prepareTupleQuery(query7_pathexpression1)
@@ -209,7 +213,7 @@ public class ParallelMixedReadWriteBenchmark extends BaseConcurrentBenchmark {
 			}));
 		}
 
-		for (int i = 0; i < 30; i++) {
+		for (int i = 0; i < 3*workloadSize; i++) {
 			list.add(getRunnable(startSignal, connection, isolationLevel, (localConnection) -> {
 				long count = localConnection
 						.prepareTupleQuery(query8_pathexpression2)
@@ -223,7 +227,7 @@ public class ParallelMixedReadWriteBenchmark extends BaseConcurrentBenchmark {
 			}));
 		}
 
-		for (int i = 0; i < 400; i++) {
+		for (int i = 0; i < 40*workloadSize; i++) {
 			list.add(getRunnable(startSignal, connection, isolationLevel, (localConnection) -> {
 				blackhole.consume(localConnection.hasStatement(null, RDF.TYPE, null, false));
 //				System.out.println("Finished hasStatement explicit");
@@ -231,7 +235,7 @@ public class ParallelMixedReadWriteBenchmark extends BaseConcurrentBenchmark {
 			}));
 		}
 
-		for (int i = 0; i < 400; i++) {
+		for (int i = 0; i < 40*workloadSize; i++) {
 			list.add(getRunnable(startSignal, connection, isolationLevel, (localConnection) -> {
 				blackhole.consume(localConnection.hasStatement(null, RDF.TYPE, null, true));
 //				System.out.println("Finished hasStatement inferred");
@@ -239,7 +243,7 @@ public class ParallelMixedReadWriteBenchmark extends BaseConcurrentBenchmark {
 			}));
 		}
 
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 2*workloadSize; i++) {
 			list.add(getRunnable(startSignal, connection, isolationLevel, (localConnection) -> {
 				long count = localConnection
 						.prepareTupleQuery(query1)
@@ -252,7 +256,7 @@ public class ParallelMixedReadWriteBenchmark extends BaseConcurrentBenchmark {
 			}));
 		}
 
-		for (int i = 0; i < 200; i++) {
+		for (int i = 0; i < 20*workloadSize; i++) {
 			list.add(getRunnable(startSignal, connection, isolationLevel, (localConnection) -> {
 				for (int j = 0; j < 100; j++) {
 					localConnection.add(Values.bnode(), RDFS.LABEL, Values.literal(j),
