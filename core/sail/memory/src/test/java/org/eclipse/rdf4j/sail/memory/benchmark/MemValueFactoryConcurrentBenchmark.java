@@ -38,6 +38,7 @@ import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
@@ -62,6 +63,9 @@ import com.google.common.collect.Lists;
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class MemValueFactoryConcurrentBenchmark extends BaseConcurrentBenchmark {
 
+	@Param({ "10", "50", "100", "500", "1000", "5000" })
+	public int numThreads;
+	
 	public static final int BUCKET_SIZE = 10000;
 	private SailRepository repository;
 	private List<List<Value>> values;
@@ -129,7 +133,7 @@ public class MemValueFactoryConcurrentBenchmark extends BaseConcurrentBenchmark 
 
 		Random random = new Random(48593);
 
-		threads(100, () -> {
+		threads(numThreads, () -> {
 
 			List<Value> values = this.values.get(random.nextInt(this.values.size()));
 
@@ -151,7 +155,7 @@ public class MemValueFactoryConcurrentBenchmark extends BaseConcurrentBenchmark 
 
 		Random random = new Random(48593);
 
-		threads(100, () -> {
+		threads(numThreads, () -> {
 			Random r = new Random(random.nextInt());
 			for (int i = 0; i < BUCKET_SIZE; i++) {
 				MemIRI orCreateMemURI = valueFactory
@@ -171,7 +175,7 @@ public class MemValueFactoryConcurrentBenchmark extends BaseConcurrentBenchmark 
 
 		AtomicInteger atomicInteger = new AtomicInteger();
 
-		threads(100, () -> {
+		threads(numThreads, () -> {
 			int base = atomicInteger.incrementAndGet();
 			for (int i = 0; i < BUCKET_SIZE; i++) {
 				IRI iri = valueFactory.createIRI("http://example.com", base + "-" + i);

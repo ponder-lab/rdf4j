@@ -53,6 +53,7 @@ import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
@@ -76,6 +77,9 @@ import ch.qos.logback.classic.Logger;
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class OverflowBenchmarkConcurrent {
 
+	@Param({ "5", "25", "50", "250", "500", "2500" })
+	public int numThreadsHalf;
+	
 	@Setup(Level.Trial)
 	public void setup() {
 		((Logger) (LoggerFactory
@@ -115,7 +119,7 @@ public class OverflowBenchmarkConcurrent {
 
 			CountDownLatch countDownLatch = new CountDownLatch(1);
 
-			for (int i = 0; i < 38; i++) {
+			for (int i = 0; i < numThreadsHalf; i++) {
 				var seed = i + 485924;
 				{
 					Future<?> submit = executorService.submit(() -> {

@@ -24,6 +24,7 @@ import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.runner.Runner;
@@ -40,6 +41,9 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 @Measurement(iterations = 5)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class ReadWriteLockManagerBenchmark extends BaseLockManagerBenchmark {
+
+	@Param({ "10", "50", "100", "500", "1000", "5000" })
+	public int numThreads;
 
 	public static void main(String[] args) throws RunnerException {
 		Options opt = new OptionsBuilder().include("ReadWriteLockManagerBenchmark.*") // adapt to run other benchmark
@@ -58,7 +62,7 @@ public class ReadWriteLockManagerBenchmark extends BaseLockManagerBenchmark {
 
 		AbstractReadWriteLockManager lockManager = getReadWriteLockManager();
 
-		threads(100, () -> {
+		threads(numThreads, () -> {
 
 			readLocks(lockManager, 100, blackhole);
 
@@ -71,7 +75,7 @@ public class ReadWriteLockManagerBenchmark extends BaseLockManagerBenchmark {
 
 		AbstractReadWriteLockManager lockManager = getReadWriteLockManager();
 
-		threads(1000, () -> {
+		threads(numThreads, () -> {
 			try {
 				Lock lock = lockManager.getWriteLock();
 				lock.release();
@@ -94,7 +98,7 @@ public class ReadWriteLockManagerBenchmark extends BaseLockManagerBenchmark {
 
 		AbstractReadWriteLockManager lockManager = getReadWriteLockManager();
 
-		threads(100, () -> {
+		threads(numThreads, () -> {
 			try {
 				Lock lock = lockManager.getWriteLock();
 				lock.release();
@@ -115,7 +119,7 @@ public class ReadWriteLockManagerBenchmark extends BaseLockManagerBenchmark {
 
 		AbstractReadWriteLockManager lockManager = getReadWriteLockManager();
 
-		threads(100, () -> {
+		threads(numThreads, () -> {
 			try {
 				Lock readLock1 = lockManager.getReadLock();
 
@@ -190,7 +194,7 @@ public class ReadWriteLockManagerBenchmark extends BaseLockManagerBenchmark {
 
 		AbstractReadWriteLockManager lockManager = getReadWriteLockManager();
 
-		threads(1000, () -> {
+		threads(numThreads, () -> {
 			try {
 				Lock lock = lockManager.getWriteLock();
 				lock.release();
