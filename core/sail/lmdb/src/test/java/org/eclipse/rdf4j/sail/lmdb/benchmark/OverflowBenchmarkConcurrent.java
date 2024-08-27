@@ -81,7 +81,7 @@ public class OverflowBenchmarkConcurrent {
 
 	@Param({ "5", "25", "50", "250", "500", "2500" })
 	public int numThreadsHalf;
-	
+
 	@Setup(Level.Trial)
 	public void setup() {
 		((Logger) (LoggerFactory
