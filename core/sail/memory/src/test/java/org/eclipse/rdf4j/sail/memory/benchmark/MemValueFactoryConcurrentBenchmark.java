@@ -66,7 +66,7 @@ public class MemValueFactoryConcurrentBenchmark extends BaseConcurrentBenchmark 
 	@Param({ "10", "50", "100", "500", "1000", "5000" })
 	public int numThreads;
 
-	public static final int BUCKET_SIZE = 10000;
+	public static final int BUCKET_SIZE = 5000;
 	private SailRepository repository;
 	private List<List<Value>> values;
 
