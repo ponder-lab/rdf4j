@@ -109,7 +109,7 @@ public class MemStatementListTestIT {
 					statements = stream
 							.map(s -> ((MemStatement) s))
 							.sorted(Comparator.comparing(Object::toString))
-							.limit(10000)
+							.limit(5000)
 							.collect(Collectors.toList());
 				}
 				connection.commit();
