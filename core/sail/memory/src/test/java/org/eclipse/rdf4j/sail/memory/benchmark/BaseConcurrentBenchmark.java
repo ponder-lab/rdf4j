@@ -15,6 +15,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -32,6 +33,7 @@ public class BaseConcurrentBenchmark {
 
 	Repository repository;
 	private ExecutorService executorService;
+	private Semaphore semaphore;
 
 	static InputStream getResourceAsStream(String filename) {
 		return BaseConcurrentBenchmark.class.getClassLoader().getResourceAsStream(filename);
@@ -43,6 +45,7 @@ public class BaseConcurrentBenchmark {
 			executorService.shutdownNow();
 		}
 		executorService = Executors.newVirtualThreadPerTaskExecutor();
+		semaphore = new Semaphore(8);
 	}
 
 	@TearDown(Level.Trial)
@@ -61,8 +64,13 @@ public class BaseConcurrentBenchmark {
 		for (int i = 0; i < threadCount; i++) {
 			executorService.submit(() -> {
 				try {
-					latch.await();
-					runnable.run();
+					semaphore.acquire();
+					try {
+						latch.await();
+						runnable.run();
+					} finally {
+						semaphore.release();
+					}
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				} finally {
@@ -77,7 +85,18 @@ public class BaseConcurrentBenchmark {
 	}
 
 	Future<?> submit(Runnable runnable) {
-		return executorService.submit(runnable);
+		return executorService.submit(() -> {
+			try {
+				semaphore.acquire();
+				try {
+					runnable.run();
+				} finally {
+					semaphore.release();
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		});
 	}
 
 	Runnable getRunnable(CountDownLatch startSignal, RepositoryConnection connection,
