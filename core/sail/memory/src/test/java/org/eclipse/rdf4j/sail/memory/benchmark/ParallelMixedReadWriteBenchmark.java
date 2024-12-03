@@ -258,7 +258,7 @@ public class ParallelMixedReadWriteBenchmark extends BaseConcurrentBenchmark {
 
 		for (int i = 0; i < 20 * workloadSize; i++) {
 			list.add(getRunnable(startSignal, connection, isolationLevel, (localConnection) -> {
-				for (int j = 0; j < 25; j++) {
+				for (int j = 0; j < 100; j++) {
 					localConnection.add(Values.bnode(), RDFS.LABEL, Values.literal(j),
 							Values.iri("http://example.com/g1"));
 				}
