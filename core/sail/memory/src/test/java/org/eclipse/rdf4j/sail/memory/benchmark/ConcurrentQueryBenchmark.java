@@ -88,7 +88,7 @@ public class ConcurrentQueryBenchmark extends BaseConcurrentBenchmark {
 	public void hasStatement(Blackhole blackhole) throws Exception {
 		threads(numThreads, () -> {
 			try (SailRepositoryConnection connection = repository.getConnection()) {
-				for (int i = 0; i < 50; i++) {
+				for (int i = 0; i < 100; i++) {
 					boolean b = connection.hasStatement(null, null, null, true);
 					blackhole.consume(b);
 				}
@@ -100,7 +100,7 @@ public class ConcurrentQueryBenchmark extends BaseConcurrentBenchmark {
 	public void hasStatementSharedConnection(Blackhole blackhole) throws Exception {
 		try (SailRepositoryConnection connection = repository.getConnection()) {
 			threads(numThreads, () -> {
-				for (int i = 0; i < 50; i++) {
+				for (int i = 0; i < 100; i++) {
 					boolean b = connection.hasStatement(null, null, null, true);
 					blackhole.consume(b);
 				}
@@ -112,7 +112,7 @@ public class ConcurrentQueryBenchmark extends BaseConcurrentBenchmark {
 	public void getNamespaces(Blackhole blackhole) throws Exception {
 		threads(numThreads, () -> {
 			try (SailRepositoryConnection connection = repository.getConnection()) {
-				for (int i = 0; i < 50; i++) {
+				for (int i = 0; i < 100; i++) {
 					blackhole.consume(connection.getNamespaces().stream().count());
 				}
 			}
@@ -123,7 +123,7 @@ public class ConcurrentQueryBenchmark extends BaseConcurrentBenchmark {
 	public void getNamespacesSharedConnection(Blackhole blackhole) throws Exception {
 		try (SailRepositoryConnection connection = repository.getConnection()) {
 			threads(numThreads, () -> {
-				for (int i = 0; i < 50; i++) {
+				for (int i = 0; i < 100; i++) {
 					blackhole.consume(connection.getNamespaces().stream().count());
 				}
 			});
