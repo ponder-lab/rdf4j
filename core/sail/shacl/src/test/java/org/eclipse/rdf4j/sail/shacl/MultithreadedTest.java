@@ -469,7 +469,7 @@ public abstract class MultithreadedTest {
 			deadlockDetectionThread.setDaemon(true);
 			deadlockDetectionThread.start();
 
-			// Refactoring this causes tests to hang forever
+			// Refactoring this to Executors.newVirtualThreadPerTaskExecutor() causes tests to hang forever
 			// (https://github.com/ponder-lab/rdf4j/actions/runs/10568156440/job/29278593171)
 			executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
 
