@@ -117,7 +117,8 @@ public class ControlledWorkerScheduler<T> implements Scheduler<T>, TaskWrapperAw
 	}
 
 	private ExecutorService createExecutorService() {
-		// Refactoring this to ExecutorService executor = Executors.newThreadPerTaskExecutor(new NamingThreadFactory(name))
+		// Refactoring this to ExecutorService executor = Executors.newThreadPerTaskExecutor(new
+		// NamingThreadFactory(name))
 		// and refactoring NamingThreadFactory to use virtual threads causes ServicesTest to hang forever
 		// (https://github.com/ponder-lab/rdf4j/actions/runs/10239404923/job/28324948852?pr=2)
 		ThreadPoolExecutor executor = new ThreadPoolExecutor(nWorkers, nWorkers, 60L, TimeUnit.SECONDS, _taskQueue,
