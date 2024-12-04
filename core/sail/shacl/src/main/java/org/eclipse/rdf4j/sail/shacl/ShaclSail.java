@@ -253,7 +253,7 @@ public class ShaclSail extends ShaclSailBaseConfiguration {
 	protected RevivableExecutorService getExecutorService() {
 		return new RevivableExecutorService(
 				// Refactoring the below to Executors.newThreadPerTaskExecutor(r -> {
-				//			Thread t = Thread.ofVirtual().factory().newThread(r);
+				// Thread t = Thread.ofVirtual().factory().newThread(r);
 				// causes tests to hang forever
 				// (https://github.com/ponder-lab/rdf4j/actions/runs/10561618648/job/29257740868)
 				() -> Executors.newFixedThreadPool(AVAILABLE_PROCESSORS,
