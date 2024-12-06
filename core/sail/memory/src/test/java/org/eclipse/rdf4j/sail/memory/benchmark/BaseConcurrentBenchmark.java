@@ -73,7 +73,6 @@ public class BaseConcurrentBenchmark {
 					}
 				} catch (InterruptedException e) {
 					e.printStackTrace();
-					throw e;
 				} finally {
 					latchDone.countDown();
 				}
@@ -85,7 +84,7 @@ public class BaseConcurrentBenchmark {
 
 	}
 
-	Future<?> submit(Runnable runnable) throws InterruptedException {
+	Future<?> submit(Runnable runnable) {
 		return executorService.submit(() -> {
 			try {
 				semaphore.acquire();
@@ -96,7 +95,6 @@ public class BaseConcurrentBenchmark {
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-				throw e;
 			}
 		});
 	}
