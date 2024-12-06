@@ -11,6 +11,7 @@
 package org.eclipse.rdf4j.sail.memory.benchmark;
 
 import java.io.InputStream;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -62,21 +63,22 @@ public class BaseConcurrentBenchmark {
 		CountDownLatch latchDone = new CountDownLatch(threadCount);
 
 		for (int i = 0; i < threadCount; i++) {
-			executorService.submit(() -> {
-				try {
-					semaphore.acquire();
+			semaphore.acquire();
+			try {
+				executorService.submit(() -> {
 					try {
 						latch.await();
 						runnable.run();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
 					} finally {
-						semaphore.release();
+						latchDone.countDown();
 					}
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				} finally {
-					latchDone.countDown();
-				}
-			});
+				});
+			} finally {
+				semaphore.release();
+			}
+
 		}
 
 		latch.countDown();
@@ -85,18 +87,15 @@ public class BaseConcurrentBenchmark {
 	}
 
 	Future<?> submit(Runnable runnable) {
-		return executorService.submit(() -> {
-			try {
-				semaphore.acquire();
-				try {
-					runnable.run();
-				} finally {
-					semaphore.release();
-				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		});
+		try {
+			semaphore.acquire();
+			return executorService.submit(runnable);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			return CompletableFuture.completedFuture(null);
+		} finally {
+			semaphore.release();
+		}
 	}
 
 	Runnable getRunnable(CountDownLatch startSignal, RepositoryConnection connection,
