@@ -117,6 +117,7 @@ public class ControlledWorkerScheduler<T> implements Scheduler<T>, TaskWrapperAw
 	}
 
 	private ExecutorService createExecutorService() {
+		
 		// Refactoring this to ExecutorService executor = Executors.newThreadPerTaskExecutor(new
 		// NamingThreadFactory(name))
 		// and refactoring NamingThreadFactory to use virtual threads causes ServicesTest to hang forever
