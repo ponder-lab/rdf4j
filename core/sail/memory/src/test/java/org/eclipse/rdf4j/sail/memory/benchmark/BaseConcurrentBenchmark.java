@@ -78,7 +78,6 @@ public class BaseConcurrentBenchmark {
 			} finally {
 				semaphore.release();
 			}
-
 		}
 
 		latch.countDown();
