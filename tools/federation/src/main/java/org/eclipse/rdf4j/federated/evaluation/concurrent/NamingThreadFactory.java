@@ -29,6 +29,10 @@ public class NamingThreadFactory implements ThreadFactory {
 
 	@Override
 	public Thread newThread(Runnable r) {
+		// Refactoring this to Thread t = Thread.ofVirtual().name(baseName + "-",
+		// nextThreadId.incrementAndGet()).unstarted(r);
+		// causes ServicesTest to hang forever
+		// (https://github.com/ponder-lab/rdf4j/actions/runs/10239404923/job/28324948852?pr=2)
 		Thread t = Executors.defaultThreadFactory().newThread(r);
 		t.setName(baseName + "-" + nextThreadId.incrementAndGet());
 		return t;

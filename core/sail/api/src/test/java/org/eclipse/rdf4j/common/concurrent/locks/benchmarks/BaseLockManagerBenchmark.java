@@ -33,7 +33,7 @@ public class BaseLockManagerBenchmark {
 	public void setUp() {
 		Logger root = (Logger) LoggerFactory.getLogger(ReadPrefReadWriteLockManager.class.getName());
 		root.setLevel(ch.qos.logback.classic.Level.ERROR);
-		executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+		executorService = Executors.newVirtualThreadPerTaskExecutor();
 	}
 
 	@TearDown(Level.Trial)

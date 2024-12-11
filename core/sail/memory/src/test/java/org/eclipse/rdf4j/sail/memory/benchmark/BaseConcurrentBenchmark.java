@@ -11,10 +11,12 @@
 package org.eclipse.rdf4j.sail.memory.benchmark;
 
 import java.io.InputStream;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -32,6 +34,7 @@ public class BaseConcurrentBenchmark {
 
 	Repository repository;
 	private ExecutorService executorService;
+	private Semaphore semaphore;
 
 	static InputStream getResourceAsStream(String filename) {
 		return BaseConcurrentBenchmark.class.getClassLoader().getResourceAsStream(filename);
@@ -42,7 +45,8 @@ public class BaseConcurrentBenchmark {
 		if (executorService != null) {
 			executorService.shutdownNow();
 		}
-		executorService = Executors.newFixedThreadPool(8);
+		executorService = Executors.newVirtualThreadPerTaskExecutor();
+		semaphore = new Semaphore(8);
 	}
 
 	@TearDown(Level.Trial)
@@ -59,16 +63,21 @@ public class BaseConcurrentBenchmark {
 		CountDownLatch latchDone = new CountDownLatch(threadCount);
 
 		for (int i = 0; i < threadCount; i++) {
-			executorService.submit(() -> {
-				try {
-					latch.await();
-					runnable.run();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				} finally {
-					latchDone.countDown();
-				}
-			});
+			semaphore.acquireUninterruptibly();
+			try {
+				executorService.submit(() -> {
+					try {
+						latch.await();
+						runnable.run();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					} finally {
+						latchDone.countDown();
+					}
+				});
+			} finally {
+				semaphore.release();
+			}
 		}
 
 		latch.countDown();
@@ -77,7 +86,12 @@ public class BaseConcurrentBenchmark {
 	}
 
 	Future<?> submit(Runnable runnable) {
-		return executorService.submit(runnable);
+		semaphore.acquireUninterruptibly();
+		try {
+			return executorService.submit(runnable);
+		} finally {
+			semaphore.release();
+		}
 	}
 
 	Runnable getRunnable(CountDownLatch startSignal, RepositoryConnection connection,
