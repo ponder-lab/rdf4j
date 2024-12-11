@@ -63,7 +63,7 @@ public class BaseConcurrentBenchmark {
 		CountDownLatch latchDone = new CountDownLatch(threadCount);
 
 		for (int i = 0; i < threadCount; i++) {
-			semaphore.acquire();
+			semaphore.acquireUninterruptibly();
 			try {
 				executorService.submit(() -> {
 					try {
@@ -86,12 +86,9 @@ public class BaseConcurrentBenchmark {
 	}
 
 	Future<?> submit(Runnable runnable) {
+		semaphore.acquireUninterruptibly();
 		try {
-			semaphore.acquire();
 			return executorService.submit(runnable);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			return CompletableFuture.completedFuture(null);
 		} finally {
 			semaphore.release();
 		}
