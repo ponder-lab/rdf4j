@@ -39,6 +39,23 @@ import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.TearDown;
+import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import com.google.common.collect.Lists;
 
@@ -47,7 +64,16 @@ import com.google.common.collect.Lists;
  *
  * @author Andreas Schwarte
  */
+@State(Scope.Benchmark)
+@Warmup(iterations = 5)
+@BenchmarkMode({ Mode.AverageTime })
+@Fork(value = 1, jvmArgs = { "-Xms1G", "-Xmx50G", })
+@Measurement(iterations = 5)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class RepositoryFederatedServiceIntegrationTest {
+
+	@Param({ "10", "50", "100", "500", "1000", "5000" })
+	private int numThreads;
 
 	private static final ValueFactory vf = SimpleValueFactory.getInstance();
 
@@ -56,6 +82,7 @@ public class RepositoryFederatedServiceIntegrationTest {
 	private RepositoryFederatedService federatedService;
 
 	@BeforeEach
+	@Setup(Level.Iteration)
 	public void before() {
 		serviceRepo = new SailRepository(new MemoryStore());
 		serviceRepo.init();
@@ -74,6 +101,7 @@ public class RepositoryFederatedServiceIntegrationTest {
 	}
 
 	@AfterEach
+	@TearDown((Level.Iteration))
 	public void after() {
 		federatedService.shutdown();
 		localRepo.shutDown();
@@ -277,6 +305,7 @@ public class RepositoryFederatedServiceIntegrationTest {
 	}
 
 	@Test
+	@Benchmark
 	public void test9_connectionHandling() throws Exception {
 
 		/*
@@ -297,7 +326,7 @@ public class RepositoryFederatedServiceIntegrationTest {
 
 		ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
 		try {
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < numThreads; i++) {
 				executor.submit(() -> {
 
 					String query = "SELECT ?var WHERE { SERVICE <urn:dummy> { ?s ?p ?var  } }";

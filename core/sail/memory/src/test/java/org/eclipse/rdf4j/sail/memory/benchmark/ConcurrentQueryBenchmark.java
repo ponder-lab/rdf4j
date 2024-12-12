@@ -25,6 +25,7 @@ import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
@@ -42,10 +43,13 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 @State(Scope.Benchmark)
 @Warmup(iterations = 5)
 @BenchmarkMode({ Mode.AverageTime })
-@Fork(value = 1, jvmArgs = { "-Xms1G", "-Xmx1G", })
+@Fork(value = 1, jvmArgs = { "-Xms1G", "-Xmx50G", })
 @Measurement(iterations = 5)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class ConcurrentQueryBenchmark extends BaseConcurrentBenchmark {
+
+	@Param({ "10", "50", "100", "500", "1000", "5000" })
+	public int numThreads;
 
 	private SailRepository repository;
 
@@ -82,7 +86,7 @@ public class ConcurrentQueryBenchmark extends BaseConcurrentBenchmark {
 
 	@Benchmark
 	public void hasStatement(Blackhole blackhole) throws Exception {
-		threads(100, () -> {
+		threads(numThreads, () -> {
 			try (SailRepositoryConnection connection = repository.getConnection()) {
 				for (int i = 0; i < 100; i++) {
 					boolean b = connection.hasStatement(null, null, null, true);
@@ -95,7 +99,7 @@ public class ConcurrentQueryBenchmark extends BaseConcurrentBenchmark {
 	@Benchmark
 	public void hasStatementSharedConnection(Blackhole blackhole) throws Exception {
 		try (SailRepositoryConnection connection = repository.getConnection()) {
-			threads(100, () -> {
+			threads(numThreads, () -> {
 				for (int i = 0; i < 100; i++) {
 					boolean b = connection.hasStatement(null, null, null, true);
 					blackhole.consume(b);
@@ -106,7 +110,7 @@ public class ConcurrentQueryBenchmark extends BaseConcurrentBenchmark {
 
 	@Benchmark
 	public void getNamespaces(Blackhole blackhole) throws Exception {
-		threads(100, () -> {
+		threads(numThreads, () -> {
 			try (SailRepositoryConnection connection = repository.getConnection()) {
 				for (int i = 0; i < 100; i++) {
 					blackhole.consume(connection.getNamespaces().stream().count());
@@ -118,7 +122,7 @@ public class ConcurrentQueryBenchmark extends BaseConcurrentBenchmark {
 	@Benchmark
 	public void getNamespacesSharedConnection(Blackhole blackhole) throws Exception {
 		try (SailRepositoryConnection connection = repository.getConnection()) {
-			threads(100, () -> {
+			threads(numThreads, () -> {
 				for (int i = 0; i < 100; i++) {
 					blackhole.consume(connection.getNamespaces().stream().count());
 				}

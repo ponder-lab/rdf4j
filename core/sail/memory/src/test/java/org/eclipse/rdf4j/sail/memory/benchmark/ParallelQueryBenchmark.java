@@ -39,6 +39,7 @@ import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
@@ -52,11 +53,13 @@ import org.openjdk.jmh.infra.Blackhole;
 @State(Scope.Benchmark)
 @Warmup(iterations = 5)
 @BenchmarkMode({ Mode.AverageTime })
-@Fork(value = 1, jvmArgs = { "-Xms1G", "-Xmx1G" })
-//@Fork(value = 1, jvmArgs = { "-Xms1G", "-Xmx1G", "-XX:StartFlightRecording=delay=20s,duration=120s,filename=recording.jfr,settings=profile", "-XX:FlightRecorderOptions=samplethreads=true,stackdepth=1024", "-XX:+UnlockDiagnosticVMOptions", "-XX:+DebugNonSafepoints" })
+@Fork(value = 1, jvmArgs = { "-Xms1G", "-Xmx50G", })
 @Measurement(iterations = 5)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class ParallelQueryBenchmark extends BaseConcurrentBenchmark {
+
+	@Param({ "1", "5", "10", "50", "100", "500" })
+	public int workloadSize;
 
 	private static final String query1;
 	private static final String query4;
@@ -133,7 +136,7 @@ public class ParallelQueryBenchmark extends BaseConcurrentBenchmark {
 			RepositoryConnection connection, IsolationLevel isolationLevel) {
 		ArrayList<Runnable> list = new ArrayList<>();
 
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 2 * workloadSize; i++) {
 			list.add(getRunnable(startSignal, connection, isolationLevel, (localConnection) -> {
 				long count = localConnection
 						.prepareTupleQuery(query4)
@@ -145,7 +148,7 @@ public class ParallelQueryBenchmark extends BaseConcurrentBenchmark {
 			}));
 		}
 
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 2 * workloadSize; i++) {
 			list.add(getRunnable(startSignal, connection, isolationLevel, (localConnection) -> {
 				long count = localConnection
 						.prepareTupleQuery(query7_pathexpression1)
@@ -157,7 +160,7 @@ public class ParallelQueryBenchmark extends BaseConcurrentBenchmark {
 			}));
 		}
 
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 2 * workloadSize; i++) {
 			list.add(getRunnable(startSignal, connection, isolationLevel, (localConnection) -> {
 				long count = localConnection
 						.prepareTupleQuery(query8_pathexpression2)
@@ -169,19 +172,19 @@ public class ParallelQueryBenchmark extends BaseConcurrentBenchmark {
 			}));
 		}
 
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 20 * workloadSize; i++) {
 			list.add(getRunnable(startSignal, connection, isolationLevel, (localConnection) -> {
 				blackhole.consume(localConnection.hasStatement(null, RDF.TYPE, null, false));
 			}));
 		}
 
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 20 * workloadSize; i++) {
 			list.add(getRunnable(startSignal, connection, isolationLevel, (localConnection) -> {
 				blackhole.consume(localConnection.hasStatement(null, RDF.TYPE, null, true));
 			}));
 		}
 
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < workloadSize; i++) {
 			list.add(getRunnable(startSignal, connection, isolationLevel, (localConnection) -> {
 				long count = localConnection
 						.prepareTupleQuery(query1)
