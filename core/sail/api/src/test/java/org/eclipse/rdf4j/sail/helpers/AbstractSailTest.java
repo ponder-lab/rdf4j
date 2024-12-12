@@ -31,13 +31,40 @@ import org.junit.jupiter.api.Test;
  *
  * @author Jeen Broekstra
  */
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
+
+@State(Scope.Benchmark)
+@Warmup(iterations = 5)
+@BenchmarkMode({ Mode.AverageTime })
+@Fork(value = 1, jvmArgs = { "-Xms1G", "-Xmx50G", })
+@Measurement(iterations = 5)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class AbstractSailTest {
+
+	@Param({ "10", "50", "100", "500", "1000", "5000" })
+	private int count;
 
 	AbstractSail subject;
 
 	private final Random random = new Random(43252333);
 
 	@BeforeEach
+	@Setup(Level.Iteration)
 	public void setUp() {
 
 		subject = new AbstractSail() {
@@ -96,8 +123,8 @@ public class AbstractSailTest {
 	}
 
 	@Test
+	@Benchmark
 	public void testConcurrentAutoInit() throws Exception {
-		int count = 200;
 		CountDownLatch latch = new CountDownLatch(count);
 
 		for (int i = 0; i < count; i++) {

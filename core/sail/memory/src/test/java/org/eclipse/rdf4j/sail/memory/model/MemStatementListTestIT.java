@@ -31,6 +31,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -47,17 +48,45 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import com.google.common.collect.Lists;
 
 @Tag("slow")
+@State(Scope.Benchmark)
+@Warmup(iterations = 5)
+@BenchmarkMode({ Mode.AverageTime })
+@Fork(value = 1, jvmArgs = { "-Xms1G", "-Xmx50G", })
+@Measurement(iterations = 5)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class MemStatementListTestIT {
 
 	private static List<MemStatement> statements;
-	public static final int CHUNKS = 1_000;
+
+	@Param({ "10", "50", "100", "500", "1000", "5000" })
+	public static int CHUNKS = 1_000;
 
 	@BeforeAll
+	@Setup(Level.Trial)
 	public static void beforeAll() throws IOException {
+		boolean isJmhRunning = System.getProperty("jmh.ignoreLock") != null;
+		if (!isJmhRunning)
+			CHUNKS = 1_000;
 		MemoryStore memoryStore = new MemoryStore();
 		try {
 			try (NotifyingSailConnection connection = memoryStore.getConnection()) {
@@ -91,6 +120,7 @@ public class MemStatementListTestIT {
 	}
 
 	@BeforeEach
+	@Setup(Level.Iteration)
 	public void beforeEach() {
 		for (MemStatement statement : statements) {
 			statement.setTillSnapshot(Integer.MAX_VALUE);
@@ -100,6 +130,7 @@ public class MemStatementListTestIT {
 
 	@Test
 	@Timeout(120)
+	@Benchmark
 	public void addMultipleThreads() throws ExecutionException, InterruptedException {
 
 		List<List<MemStatement>> partition = Lists.partition(statements, CHUNKS);
@@ -140,6 +171,7 @@ public class MemStatementListTestIT {
 
 	@Test
 	@Timeout(120)
+	@Benchmark
 	public void addMultipleThreadsAndCleanupThread() throws ExecutionException, InterruptedException {
 
 		List<List<MemStatement>> partition = Lists.partition(statements, CHUNKS);
