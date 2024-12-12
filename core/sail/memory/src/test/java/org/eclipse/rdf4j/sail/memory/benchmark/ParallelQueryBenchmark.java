@@ -53,8 +53,7 @@ import org.openjdk.jmh.infra.Blackhole;
 @State(Scope.Benchmark)
 @Warmup(iterations = 5)
 @BenchmarkMode({ Mode.AverageTime })
-@Fork(value = 1, jvmArgs = { "-Xms1G", "-Xmx1G" })
-//@Fork(value = 1, jvmArgs = { "-Xms1G", "-Xmx1G", "-XX:StartFlightRecording=delay=20s,duration=120s,filename=recording.jfr,settings=profile", "-XX:FlightRecorderOptions=samplethreads=true,stackdepth=1024", "-XX:+UnlockDiagnosticVMOptions", "-XX:+DebugNonSafepoints" })
+@Fork(value = 1, jvmArgs = { "-Xms1G", "-Xmx50G", })
 @Measurement(iterations = 5)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class ParallelQueryBenchmark extends BaseConcurrentBenchmark {
